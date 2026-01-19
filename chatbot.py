@@ -1,15 +1,17 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains import LLMChain
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
 def main():
     llm = ChatOpenAI(
-        temperature=0.7,
-        model="gpt-3.5-turbo"
+        model="openai/gpt-3.5-turbo",
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.getenv("OPENAI_API_KEY")
     )
+
 
     prompt = ChatPromptTemplate.from_template(
         """
@@ -20,11 +22,6 @@ def main():
         """
     )
 
-    chain = LLMChain(
-        llm=llm,
-        prompt=prompt
-    )
-
     print("🤖 AI Chatbot (type 'exit' to quit)\n")
 
     while True:
@@ -33,8 +30,10 @@ def main():
             print("Bot: Bye! 👋")
             break
 
-        response = chain.run(question=user_input)
-        print(f"Bot: {response}\n")
+        messages = prompt.format_messages(question=user_input)
+        response = llm.invoke(messages)
+
+        print(f"Bot: {response.content}\n")
 
 if __name__ == "__main__":
     main()
