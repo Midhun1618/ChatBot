@@ -16,7 +16,6 @@ This project demonstrates a Python-based AI chatbot built using LangChain and Op
 
 ## How to Run
 1. Add your OpenAI API key in `.env`
-2. Install dependencies:
-   pip install langchain openai python-dotenv
+2. Install all dependencies in terminal-requirements.txt.
 3. Run:
    python terminal-chatbot.py
