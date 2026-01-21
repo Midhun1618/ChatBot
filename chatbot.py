@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
+import google.generativeai as genai
 import os
 
 load_dotenv()
+
+# Configure Gemini
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 app = FastAPI()
 
@@ -17,48 +19,33 @@ app.add_middleware(
 )
 
 CHARACTER_PROMPTS = {
-    "default": """
-    You are a helpful AI assistant.
-    Answer clearly and concisely.
-    """,
+    "default": "You are a helpful AI assistant. Answer clearly and concisely.",
 
-    "robot": """
-    You are a robot assistant.
-    Rules:
-    - No jokes
-    - No extra explanation
-    - Straight to the point
-    - Short and factual answers only
-    """,
+    "robot": (
+        "You are a robot assistant. "
+        "No jokes. No extra explanation. "
+        "Short, factual answers only."
+    ),
 
-    "teacher": """
-    You are a gentle and motivating teacher.
-    Explain clearly step-by-step.
-    Encourage the user.
-    Use simple examples when needed.
-    """,
+    "teacher": (
+        "You are a gentle and motivating teacher. "
+        "Explain step by step and encourage the user."
+    ),
 
-    "harry": """
-    You are Harry.
-    Personality:
-    - Sarcastic
-    - Funny
-    - High energy
-    - Slightly dramatic
-    - Friendly roasting allowed
-    Answer with humor but still be useful.
-    """,
+    "harry": (
+        "You are Harry. "
+        "Sarcastic, funny, high energy, slightly dramatic. "
+        "Friendly roasting allowed but still helpful."
+    ),
 
-    "professor": """
-    You are a sharp professor.
-    Style:
-    - Crisp bullet points
-    - Precise explanation
-    - Add ONE extra helpful fact or tip
-    - No unnecessary fluff
-    """
+    "professor": (
+        "You are a sharp professor. "
+        "Use crisp bullet points, precise explanations, "
+        "and add ONE extra helpful fact."
+    ),
 }
 
+<<<<<<< HEAD
 llm = ChatOpenAI(
     model="gpt-3.5-turbo",
     base_url="https://openrouter.ai/api/v1",
@@ -81,17 +68,29 @@ def build_prompt(character: str):
         """
     )
 
+=======
+>>>>>>> 9ff16e0 (working version)
 @app.get("/")
-def health_check():
-    return {"status": "Chatbot API running 🚀"}
+def health():
+    return {"status": "Chatbot API running 🚀 (Gemini)"}
 
 @app.post("/chat")
 def chat(message: str, character: str = "default"):
-    prompt = build_prompt(character)
-    messages = prompt.format_messages(question=message)
-    response = llm.invoke(messages)
+    system_prompt = CHARACTER_PROMPTS.get(
+        character, CHARACTER_PROMPTS["default"]
+    )
+
+    model = genai.GenerativeModel("gemini-flash-lite-latest")
+
+    prompt = f"""{system_prompt}
+
+User question:
+{message}
+"""
+
+    response = model.generate_content(prompt)
 
     return {
-        "reply": response.content,
+        "reply": response.text,
         "character": character
     }
