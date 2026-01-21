@@ -62,7 +62,7 @@ CHARACTER_PROMPTS = {
 llm = ChatOpenAI(
     model="gpt-3.5-turbo",
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENAI_API_KEY"),
+    api_key=os.getenv("OPENROUTER_API_KEY"),
     default_headers={
         "HTTP-Referer": "https://chatbotvox.onrender.com",
         "X-Title": "VoxCom Chatbot",
