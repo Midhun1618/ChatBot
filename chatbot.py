@@ -60,7 +60,7 @@ CHARACTER_PROMPTS = {
 }
 
 llm = ChatOpenAI(
-    model="openai/gpt-3.5-turbo",
+    model="gpt-3.5-turbo",
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENAI_API_KEY"),
 )
